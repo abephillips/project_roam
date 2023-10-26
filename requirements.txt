@@ -12,4 +12,3 @@ openpyxl
 matplotlib
 seaborn
 networkx==2.7.1
-pickle
