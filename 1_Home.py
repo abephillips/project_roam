@@ -17,7 +17,7 @@ import tempfile
 from utils.helpers import *
 import random
 
-# from models.ROAM_v2 import *
+from models.ROAM_v2 import *
 
 st.set_page_config(
     page_title="Current Pipeline",
@@ -63,8 +63,8 @@ if 'count' not in st.session_state:
 with open('./models/model_dictionary.pkl', 'rb') as f:
     clf_dict = pickle.load(f)
     
-with open('./models/outcome_classifier.pkl', 'rb') as f:
-    outcome_clf = pickle.load(f)
+# with open('./models/outcome_classifier.pkl', 'rb') as f:
+#     outcome_clf = pickle.load(f)
 
 # attrtition model
 
