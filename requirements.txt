@@ -1,14 +1,14 @@
-streamlit
-gcsfs
+streamlit==1.27.2
+gcsfs==2023.9.2
 
 simpy==4.0.1
 pandas==1.4.2
-joblib
-scipy
+joblib==1.1.0
+scipy==1.7.3
 pure-predict
 plotly
 openpyxl
 matplotlib
 seaborn
-networkx
-sklearn
+networkx==2.7.1
+scikit-learn
