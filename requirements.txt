@@ -1,0 +1,13 @@
+streamlit
+gcsfs
+
+simpy==4.0.1
+pandas==1.4.2
+joblib
+scipy
+pure-predict
+plotly
+openpyxl
+matplotlib
+seaborn
+networkx

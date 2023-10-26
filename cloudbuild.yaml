@@ -1,0 +1,9 @@
+steps: 
+    - name: 'gcr.io/cloud-builders/docker'
+    - args: ['build', '-t', 'gcr.io/$GCP_PROJECT_ID/headcount-model', '.']
+    
+    - name: 'gcr.io/cloud-builders/docker'
+    - args: ['tag', 'headcount_model', 'gcr.io/$GCP_PROJECT_ID/headcount-model']
+    
+    - name: 'gcr.io/cloud-builders/docker'
+    - args: ['push', 'gcr.io/$GCP_PROJECT_ID/headcount-model']

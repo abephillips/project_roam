@@ -1,0 +1,31 @@
+/* div.css-j5r0tf.e1tzin5v2{
+ background-color: rgb(240, 242, 246, 0.6);
+ padding: 20px 20px 20px 20px;
+ border-radius: 10px;
+ color: #ffc300;
+ box-shadow: 10px; 
+ transition:.3s;
+} */
+
+/* div.st-emotion-cache-ocqkz7.e1f1d6gn3:hover{
+ background-color: rgb(240, 242, 246, 1);
+
+} */
+
+/* .st-emotion-cache-ocqkz7:hover{
+    background-color: rgb(33, 117, 217, 1);
+}
+
+.st-emotion-cache-ocqkz7:target{
+    background-color: black;
+} */
+
+/* [data-testid="column"] {
+    box-shadow: rgb(0 0 0 / 20%) 0px 2px 1px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px;
+    border-radius: 15px;
+
+} 
+
+div[data-testid="stVerticalBlock"] > div:first-of-type {
+  background-color: red;
+}*
