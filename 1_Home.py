@@ -16,6 +16,7 @@ import openpyxl
 import tempfile
 from utils.helpers import *
 import random
+import sklearn
 
 from models.ROAM_v2 import *
 
