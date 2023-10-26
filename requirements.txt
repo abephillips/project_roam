@@ -13,3 +13,4 @@ seaborn
 networkx==2.7.1
 scikit-learn
 pickle
+sklearn
