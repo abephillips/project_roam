@@ -60,8 +60,8 @@ if 'count' not in st.session_state:
 
 # import models
 
-with open('./models/model_dictionary.pkl', 'rb') as f:
-    clf_dict = pickle.load(f)
+# with open('./models/model_dictionary.pkl', 'rb') as f:
+#     clf_dict = pickle.load(f)
     
 # with open('./models/outcome_classifier.pkl', 'rb') as f:
 #     outcome_clf = pickle.load(f)
