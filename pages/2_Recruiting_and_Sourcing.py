@@ -65,14 +65,19 @@ def record_change_dates():
 
 @st.cache_data 
 def load_data(): 
-    data = pd.read_csv('gs://hc_dashboard_ptrs_lats/app_data/ptrs_lats_complete_paths.csv',
-                 storage_options={"token": "utils/service_account.json"})
-    data = data.rename(columns = {'rpo_location':'location', 'rpo_recruiting_group': 'role'}).fillna(0)
+    try: 
+        data = pd.read_csv('gs://hc_dashboard_ptrs_lats/app_data/ptrs_lats_complete_paths.csv',
+                     storage_options={"token": "utils/service_account.json"})
+        data = data.rename(columns = {'rpo_location':'location', 'rpo_recruiting_group': 'role'}).fillna(0)
 
-#     candidates_in_progress = pd.read_csv('gs://hc_dashboard_ptrs_lats/app_data/curr_in_progress_trunc.csv',
-#                            storage_options={"token": "utils/service_account.json"})
+#         candidates_in_progress = pd.read_csv('gs://hc_dashboard_ptrs_lats/app_data/curr_in_progress_trunc.csv',
+#                                storage_options={"token": "utils/service_account.json"})
+    except: 
+        data = pd.read_csv('appdata/ptrs_lats_complete_paths.csv')
+
+        # candidates_in_progress = pd.read_csv('appdata/curr_in_progress_trunc.csv')
     
-    return data
+    return data #, candidates_in_progress
 
 data = load_data()
 
