@@ -164,7 +164,6 @@ def get_initials(location, role, actuals):
     
         
 def calc_goals(d3, goal, deadline, event, other_goals = []): 
-
     n = d3[d3['y'] == event]
     l, val = n['stats'].values[0]
     goal /= val
@@ -194,7 +193,6 @@ def realize(row, L):
     df['date'] = dr
     df['quantity'] = e
     df['event'] = cl
-
     L.append(df)
     return
 
@@ -209,9 +207,10 @@ def Simulation(target_capacity,
     N = np.ceil(target_capacity[0] / ramping_function(5))
     mode = 'capacity'
     
-    n_weeks = 12
+    n_weeks = 5
 
-    sim_len = (end_date - start_date).days // 7    
+    sim_len = (end_date - start_date).days // 7
+    
     record = np.zeros((sim_len, n_weeks + sim_len + 2))
 
     env = simpy.Environment()
@@ -222,10 +221,10 @@ def Simulation(target_capacity,
                 team = team, mode = mode)
     )
     env.run(sim_len)
-    
     rf = np.vectorize(ramping_function)
     period = pd.date_range(start_date, end_date, freq = 'W', inclusive = 'left')
     df = pd.DataFrame(record)
+    
     df = df.assign(
         global_capacity = np.dot(df.iloc[:, :-2].values, rf(df.iloc[:, :-2].columns).T),
         global_headcount = (df.iloc[:, -2] + df.iloc[:, -1]), 

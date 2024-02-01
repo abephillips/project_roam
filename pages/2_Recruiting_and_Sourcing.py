@@ -218,12 +218,14 @@ with col4:
         st.metric('Data Latency', value = lat_value, delta = lat_value - oe_oa_lat)
             
 with col5: 
-    st.markdown("""#### PPR""")
-    ppr = st.number_input('PPR', min_value=0, max_value=100, value=4, label_visibility="visible", step = 1, key = 'ppr')
+    st.markdown("""#### AC's Per Week""")
+    ac_ppr = st.number_input("""Number of AC's an individual contributor expected to produce in one week""", min_value=0, max_value=1000, value=220, label_visibility="visible", step = 1, key = 'ppr')
 
 
-    ppr_value = 4
-    st.metric('Target PPR', value = ppr_value, delta = ppr - ppr_value)
+#     ac_ppr_value = 220
+#     st.metric('Target', value = ac_ppr_value, delta = ac_ppr - ac_ppr_value)
+
+    
     
 
     
@@ -246,7 +248,6 @@ d3 = d2.groupby(['x', 'y']).apply(lambda g : g['value'].values)
 
 d3.name = 'stats'
 d3 = d3.reset_index()
-print(d3)
 
 d_ptr_dic = {}
 for i, r in d3[['x', 'y', 'stats']].iterrows(): 
@@ -272,8 +273,6 @@ def get_path_attrs(G, x, y):
 ac_oa_ptr, ac_oa_lat = get_path_attrs(G, 'ac', 'oa')
 os_oa_ptr, os_oa_lat = get_path_attrs(G, 'os', 'oa')
 oe_oa_ptr, oe_oa_lat = get_path_attrs(G, 'oe', 'oa')
-
-ac_ppr = (d2[d2.variable == 'ppr']['value'] / ac_oa_ptr).values[0] / 4.6
 
 def render_elem(): 
     s = ''
@@ -317,8 +316,8 @@ with st.sidebar.expander("Targets"):
 
     with colb: 
         change_date0 = st.date_input('Target Date',
-                                     value=max([pd.Timestamp('2024/03/25').date(), start_date + pd.Timedelta(ac_oa_lat, unit = 'W')]), 
-                                     min_value=start_date + pd.Timedelta(ac_oa_lat, unit = 'W'), 
+                                     value=pd.to_datetime('2024/05/20'),  
+                                     min_value=pd.to_datetime('2024/05/20'), 
                                      max_value=end_date
         )
     with colc: 
@@ -340,7 +339,7 @@ def determine_necessary_capacity(change_dates, d3):
     goals['goal_order'] = goals.date.rank() - 1
 
     dl = pd.concat([goals, other_goals], ignore_index = True).reset_index(drop = True).sort_values(by = 'date', ascending = False).fillna(method = 'ffill')
-    print(dl)
+
     deadline = dl.loc[dl.event == 'ac']['date'].values
 
     durrs = get_duration(start_date, deadline, ac_oa_lat)
@@ -421,11 +420,9 @@ def det_nec_cap(change_dates, G):
 # det_nec_cap(st.session_state['change_dates'].values(), G)    
 
 # dll2, dll, dl = det_nec_cap(st.session_state['change_dates'].values(), G)  
-
 dll2, dll, dl = determine_necessary_capacity(st.session_state['change_dates'].values(), d3)
- 
+
 target_capacity_ac = dll2['ac']
-st.write(dll2.cumsum())
 act = get_initials(location, role, actuals = data)
 ppr_list = [n * ac_ppr for n in [0.25, 0.5, 0.75, 1]]
 ramping_function_rec = lambda n : ramping_function(n, ppr_list = ppr_list)
@@ -463,7 +460,8 @@ st.markdown("""
 tab1, tab2 = st.tabs(['Raw Headcount', 'Broken Down by Experience Level'])
 
 with tab1: 
-    fig = px.bar(LL_agg_loc, x = 'date', y = 'total_team_size')
+
+    fig = px.bar(LL_agg_loc, x = 'date', y = 'global_headcount')
     fig.update_layout(
         xaxis_title="Date", yaxis_title="Estimated Required Headcount"
     )
