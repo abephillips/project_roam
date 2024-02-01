@@ -161,7 +161,7 @@ with col1:
     ac_os_ptr = st.number_input('PTR', 
                                 min_value=0.0, max_value=1.0, 
                                 value=d['ptr_ac_os'].values[0], 
-                                label_visibility="visible", step = 0.01, key = 'ac_os_ptr')
+                                label_visibility="visible", step = 0.01, format="%.5f", key = 'ac_os_ptr')
 
     ac_os_lat = st.number_input('Latency (Weeks)',
                                 min_value=0, 
@@ -182,7 +182,7 @@ with col3:
     os_oe_ptr = st.number_input('PTR',
                                 min_value=0.0, max_value=1.0, 
                                 value=d['ptr_os_oe'].values[0], 
-                                label_visibility="visible", step = 0.01, key = 'os_oe_ptr')
+                                label_visibility="visible", step = 0.01, format="%.5f", key = 'os_oe_ptr')
     os_oe_lat = st.number_input('Latency (Weeks)',
                                 min_value=0, 
                                 value=min(int(d['lat_os_oe'].values[0] // 7), 4), 
@@ -203,7 +203,7 @@ with col4:
     oe_oa_ptr = st.number_input('PTR',
                                 min_value=0.0, max_value=1.0, 
                                 value=d['ptr_oe_oa'].values[0], 
-                                label_visibility="visible", step = 0.01, key = 'oe_oa_ptr')
+                                label_visibility="visible", format="%.5f", key = 'oe_oa_ptr')
     oe_oa_lat = st.number_input('Latency (Weeks)', 
                                 min_value=0, value=min(int(d['lat_oe_oa'].values[0] // 7), 4), 
                                 label_visibility="visible", step = 1, key = 'oe_oa_lat')
@@ -357,9 +357,75 @@ def determine_necessary_capacity(change_dates, d3):
 
     return dll2, dll, dl
 
+def calc_goals_split(goal_row, G, other_goals):
+    oa_goal = goal_row['quantity']
+    i = goal_row['goal_order']
+    Paths = []
+    path_weights = []
+    path_lengths = []
+    for path in nx.all_simple_paths(G, 'oa', 'ac', cutoff=None): 
+        Paths.append(path)
+        path_weights.append(np.exp(nx.path_weight(G, path, 'ptr_log')))
+        path_lengths.append(nx.path_weight(G, path, 'lat'))
+    path_weights = np.array(path_weights)    
+    normalized_path_weights = path_weights / np.sum(path_weights)
+
+    for j, (p, w, l) in enumerate(zip(Paths, normalized_path_weights, path_lengths)): 
+        mini_path = p
+        individual_oa_goal = np.ceil(w * 200)
+        individual_deadline = goal_row['date']
+        goal = individual_oa_goal
+        deadline = individual_deadline
+        other_goals.append({'date': deadline, 'quantity':  goal, 'event' : 'oa', 'goal_order': i, 'path': j})
+        for x, y in zip(mini_path[:-1], mini_path[1:]): 
+            edge = G.edges[y, x]
+            pt = edge['ptr']
+            lt = edge['lat']
+            goal = np.ceil(goal / pt)
+            deadline -= pd.Timedelta(lt, unit = 'W')
+            if y == 'ac': 
+                
+                other_goals.append({'date': deadline, 'quantity':  goal, 'event' : y, 'ac_oa_lat': l, 'goal_order': i, 'path': j})
+            else: 
+                other_goals.append({'date': deadline, 'quantity':  goal, 'event' : y, 'goal_order': i, 'path': j})
+
+    
+def det_nec_cap(change_dates, G): 
+    goals = pd.DataFrame(change_dates)
+    goals['goal_order'] = goals.date.rank(ascending = True) - 1
+    other_goals = []
+    _ = goals.apply(lambda row : calc_goals_split(row, G, other_goals), axis = 1)
+    other_goals = pd.DataFrame(other_goals)
+    deadlines = other_goals.loc[other_goals.event == 'ac'][['date', 'ac_oa_lat', 'goal_order', 'path']]
+    # durrs = get_duration(start_date, deadline, ac_oa_lat)
+    deadlines['durr'] = (deadlines.date - start_date).dt.days // 7
+    deadlines['durr'] = deadlines[['durr', 'ac_oa_lat']].max(axis = 1)
+    
+    
+    dl = other_goals.merge(deadlines[['goal_order', 'durr', 'path']], on = ['goal_order', 'path']).sort_values(['goal_order', 'event'])
+    L = []
+    _ = dl.apply(realize, L = L, axis = 1)
+    
+    dll = pd.concat(L).groupby(['date', 'event'], as_index = False).sum()
+    dll2 = dll.pivot(index = ['date'], columns = 'event', values = 'quantity')
+    dll2 = dll2.fillna(method = 'ffill')
+#     L = []
+#     for i, durr in enumerate(durrs[::-1]): 
+#         dl.loc[dl.goal_order == i, 'durr'] = durr
+
+    
+    return dll2, dll, dl
+
+    
+
+# det_nec_cap(st.session_state['change_dates'].values(), G)    
+
+# dll2, dll, dl = det_nec_cap(st.session_state['change_dates'].values(), G)  
+
 dll2, dll, dl = determine_necessary_capacity(st.session_state['change_dates'].values(), d3)
  
 target_capacity_ac = dll2['ac']
+st.write(dll2.cumsum())
 act = get_initials(location, role, actuals = data)
 ppr_list = [n * ac_ppr for n in [0.25, 0.5, 0.75, 1]]
 ramping_function_rec = lambda n : ramping_function(n, ppr_list = ppr_list)
