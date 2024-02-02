@@ -481,7 +481,6 @@ st.markdown("""
 tab1, tab2 = st.tabs(['Raw Headcount', 'Broken Down by Experience Level'])
 
 with tab1: 
-
     fig = px.bar(LL_agg_loc, x = 'date', y = 'global_headcount')
     fig.update_layout(
         xaxis_title="Date", yaxis_title="Estimated Required Headcount"

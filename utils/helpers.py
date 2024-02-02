@@ -70,7 +70,6 @@ def sustain(env, N, record, start_date, end_date, n_weeks, target_capacity, mode
     initial_headcount = N
     # N = initial_headcount
     
-    st.write(len(target_capacity))
 
     team.Headcount.put(initial_headcount)
     record[env.now, [n_weeks-1, -1]] += N
@@ -209,7 +208,7 @@ def Simulation(target_capacity,
     N = np.ceil(target_capacity[0] / ramping_function(5))
     mode = 'capacity'
     
-    n_weeks = 5
+    n_weeks = 12
 
     sim_len = (end_date - start_date).days // 7
     
@@ -253,9 +252,8 @@ def Simulation(target_capacity,
 
     LL_agg['cum_tix'] = LL_agg.global_capacity.cumsum()
     LL_agg_loc = LL_agg.copy()
-
-    LL_agg_loc['total_team_size'] = LL_agg_loc.loc[:, 0:c-1].sum(axis = 1)
-    LL_agg_loc['5+'] = LL_agg_loc.loc[:, 4:c-1].sum(axis = 1)
+    LL_agg_loc['total_team_size'] = LL_agg_loc.loc[:, 0:c-2].sum(axis = 1)
+    LL_agg_loc['5+'] = LL_agg_loc.loc[:, 4:c-2].sum(axis = 1)
     LL_agg_loc['date'] = pd.to_datetime(LL_agg_loc['date']).dt.date
 
     return LL_agg, LL_agg_loc
