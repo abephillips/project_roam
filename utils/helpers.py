@@ -69,6 +69,8 @@ def sustain(env, N, record, start_date, end_date, n_weeks, target_capacity, mode
     print(initial_capacity)
     initial_headcount = N
     # N = initial_headcount
+    
+    st.write(len(target_capacity))
 
     team.Headcount.put(initial_headcount)
     record[env.now, [n_weeks-1, -1]] += N

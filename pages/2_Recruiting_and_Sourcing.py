@@ -165,7 +165,7 @@ with col1:
 
     ac_os_lat = st.number_input('Latency (Weeks)',
                                 min_value=0, 
-                                value=min(int(d['lat_ac_os'].values[0] // 7), 4), 
+                                value=6, # int(d['lat_ac_os'].values[0] // 7), 
                                 label_visibility="visible", step = 1, key = 'ac_os_lat')
 
     subcol1, subcol2 = st.columns(2)
@@ -185,7 +185,7 @@ with col3:
                                 label_visibility="visible", step = 0.01, format="%.5f", key = 'os_oe_ptr')
     os_oe_lat = st.number_input('Latency (Weeks)',
                                 min_value=0, 
-                                value=min(int(d['lat_os_oe'].values[0] // 7), 4), 
+                                value=6, #int(d['lat_os_oe'].values[0] // 7), 
                                 label_visibility="visible", step = 1, key = 'os_oe_lat')
 
     subcol1, subcol2 = st.columns(2)
@@ -205,7 +205,7 @@ with col4:
                                 value=d['ptr_oe_oa'].values[0], 
                                 label_visibility="visible", format="%.5f", key = 'oe_oa_ptr')
     oe_oa_lat = st.number_input('Latency (Weeks)', 
-                                min_value=0, value=min(int(d['lat_oe_oa'].values[0] // 7), 4), 
+                                min_value=0, value=int(d['lat_oe_oa'].values[0] // 7), 
                                 label_visibility="visible", step = 1, key = 'oe_oa_lat')
 
     subcol1, subcol2 = st.columns(2)
@@ -349,9 +349,22 @@ def determine_necessary_capacity(change_dates, d3):
     for i, durr in enumerate(durrs[::-1]): 
         dl.loc[dl.goal_order == i, 'durr'] = durr
     _ = dl.apply(realize, L = L, axis = 1)
+    
     dll = pd.concat(L).groupby(['date', 'event'], as_index = False).sum()
+    # st.write(dll)
     dll2 = dll.pivot(index = ['date'], columns = 'event', values = 'quantity')
-    dll2 = dll2.fillna(method = 'ffill')
+    
+    dll2 = pd.concat([
+        dll2, 
+        pd.DataFrame(
+            index = pd.date_range(dll2.index.min(), dll2.index.max(), freq = 'W')
+        )
+    ])
+    
+    dll2 = dll2[~dll2.index.duplicated(keep='first')]
+    dll2.index.name = 'date'
+    dll2 = dll2.sort_index().fillna(method = 'ffill')
+
     # target_capacity_ac = dll2['ac']
 
     return dll2, dll, dl
@@ -404,6 +417,7 @@ def det_nec_cap(change_dates, G):
     dl = other_goals.merge(deadlines[['goal_order', 'durr', 'path']], on = ['goal_order', 'path']).sort_values(['goal_order', 'event'])
     L = []
     _ = dl.apply(realize, L = L, axis = 1)
+
     
     dll = pd.concat(L).groupby(['date', 'event'], as_index = False).sum()
     dll2 = dll.pivot(index = ['date'], columns = 'event', values = 'quantity')
@@ -422,10 +436,17 @@ def det_nec_cap(change_dates, G):
 # dll2, dll, dl = det_nec_cap(st.session_state['change_dates'].values(), G)  
 dll2, dll, dl = determine_necessary_capacity(st.session_state['change_dates'].values(), d3)
 
-target_capacity_ac = dll2['ac']
+target_capacity_ac = dll2[['ac']]
 act = get_initials(location, role, actuals = data)
 ppr_list = [n * ac_ppr for n in [0.25, 0.5, 0.75, 1]]
 ramping_function_rec = lambda n : ramping_function(n, ppr_list = ppr_list)
+
+start_time =pd.to_datetime('2024-01-28')
+end_time = pd.to_datetime('2024-05-19')
+
+# target_capacity_ac = pd.DataFrame(index = pd.date_range(start_time, end_time, freq = 'W'))
+# target_capacity_ac['ac'] = 7594
+# st.write(target_capacity_ac.reset_index())
 
 LL_agg, LL_agg_loc = Simulation(target_capacity_ac, ramping_function = ramping_function_rec, attrition_model = attrition_model)
 
