@@ -4,7 +4,7 @@ streamlit==1.27.2
 gcsfs==2023.9.2
 
 simpy==4.0.1
-pandas==1.4.2
+pandas
 joblib==1.1.0
 scipy
 pure-predict
