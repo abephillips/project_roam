@@ -186,7 +186,7 @@ def get_duration(todays_date, deadlines, ac_oa_lat):
 
 
 def realize(row, L):
-    st.write(dr)
+    st.write(row)
     dr = pd.date_range(row['date'] - pd.Timedelta(row['durr'] + 1, unit = 'W'), row['date'], freq = 'W')
     st.write(dr, row['quantity'])
     e = np.ceil(row['quantity'] / len(dr))
