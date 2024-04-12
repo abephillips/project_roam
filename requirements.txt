@@ -6,7 +6,7 @@ gcsfs==2023.9.2
 simpy==4.0.1
 pandas==1.4.2
 joblib==1.1.0
-scipy==1.7.3
+scipy
 pure-predict
 plotly
 openpyxl
