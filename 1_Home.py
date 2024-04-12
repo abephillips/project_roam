@@ -370,7 +370,7 @@ with taba:
     
     total = len(cip)    
     
-    cip = assign_cohorts(np.int(total_oa), np.int(rej), np.int(withdrawn), np.int(0),  cip)
+    cip = assign_cohorts(int(total_oa), int(rej), int(withdrawn), int(0),  cip)
     
     st.markdown("""
     #### Current Pipeine Projection
