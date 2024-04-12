@@ -187,7 +187,7 @@ def get_duration(todays_date, deadlines, ac_oa_lat):
 
 def realize(row, L):
     dr = pd.date_range(row['date'] - pd.Timedelta(row['durr'] + 1, unit = 'W'), row['date'], freq = 'W')
-    print(dr, row['quantity')
+    print(dr, row['quantity'])
     e = np.ceil(row['quantity'] / len(dr))
     cl = row['event']
 
