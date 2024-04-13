@@ -46,8 +46,8 @@ def load_data():
 data, candidates_in_progress = load_data()
 
 rng = pd.date_range(
-    start = pd.to_datetime('2023/03/13'), 
-    end = pd.to_datetime('2023/12/25'), freq = '7D')
+    start = pd.to_datetime('2024/03/13'), 
+    end = pd.to_datetime('2024/12/25'), freq = '7D')
 
 if 'change_dates' not in st.session_state: 
     st.session_state['change_dates'] = {}
