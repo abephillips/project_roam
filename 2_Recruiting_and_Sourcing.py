@@ -445,6 +445,7 @@ start_date = start_date_ - pd.Timedelta(start_date_.weekday(), unit = 'D')
 
 
 with st.sidebar.expander("Targets"): 
+    st.write(start_date + pd.Timedelta(ac_oa_lat, unit = 'W'))
     cola, colb, colc = st.columns(3)
 
     with cola: 
