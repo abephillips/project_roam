@@ -445,7 +445,7 @@ start_date = start_date_ - pd.Timedelta(start_date_.weekday(), unit = 'D')
 
 
 with st.sidebar.expander("Targets"): 
-    st.write(start_date + pd.Timedelta(ac_oa_lat, unit = 'W'))
+
     cola, colb, colc = st.columns(3)
 
     with cola: 
@@ -453,7 +453,7 @@ with st.sidebar.expander("Targets"):
 
     with colb: 
         change_date0 = st.date_input('Target Date',
-                                     value=max([pd.Timestamp('2024/03/25').date(), start_date + pd.Timedelta(ac_oa_lat, unit = 'W')]), 
+                                     value=max([pd.Timestamp('2024/03/25').date(), start_date + pd.Timedelta(ac_oa_lat * 2, unit = 'W')]), 
                                      min_value=start_date + pd.Timedelta(ac_oa_lat, unit = 'W'), 
                                      max_value=end_date
         )
