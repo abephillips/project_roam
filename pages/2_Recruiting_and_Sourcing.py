@@ -316,8 +316,8 @@ with st.sidebar.expander("Targets"):
 
     with colb: 
         change_date0 = st.date_input('Target Date',
-                                     value=pd.to_datetime('2024/05/20'),  
-                                     min_value=pd.to_datetime('2024/05/20'), 
+                                     value=start_date + pd.Timedelta(ac_oa_lat, unit = 'W'), 
+                                     min_value=start_date + pd.Timedelta(ac_oa_lat, unit = 'W'), 
                                      max_value=end_date
         )
     with colc: 
